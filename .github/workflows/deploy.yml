@@ -33,7 +33,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd fastapi-ec2-demo || exit 1
+            cd docker || exit 1
 
             # .env ファイルがなければ作成（初回のみ）
             if [ ! -f .env ]; then
