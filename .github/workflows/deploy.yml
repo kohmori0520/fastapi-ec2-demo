@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: Deploy to EC2 with Compose
 
 on:
   push:
@@ -26,13 +26,23 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/fastapi-ec2-demo:latest
 
-      - name: Deploy to EC2
+      - name: Deploy to EC2 with Docker Compose
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKER_USERNAME }}/fastapi-ec2-demo:latest
-            docker stop fastapi || true && docker rm fastapi || true
-            docker run -d --name fastapi -p 80:8000 ${{ secrets.DOCKER_USERNAME }}/fastapi-ec2-demo:latest
+            cd fastapi-ec2-demo || exit 1
+
+            # .env ファイルがなければ作成（初回のみ）
+            if [ ! -f .env ]; then
+              echo "POSTGRES_USER=postgres" >> .env
+              echo "POSTGRES_PASSWORD=secret" >> .env
+              echo "POSTGRES_DB=fastapi_db" >> .env
+              echo "DATABASE_URL=postgresql://postgres:secret@db:5432/fastapi_db" >> .env
+            fi
+
+            docker compose down || true
+            docker compose pull || true
+            docker compose up -d --build
