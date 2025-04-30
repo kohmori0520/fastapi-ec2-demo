@@ -33,8 +33,6 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd docker || exit 1
-
             # .env ファイルがなければ作成（初回のみ）
             if [ ! -f .env ]; then
               echo "POSTGRES_USER=postgres" >> .env
