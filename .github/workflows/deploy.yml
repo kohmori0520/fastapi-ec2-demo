@@ -33,7 +33,18 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            # .env ファイルがなければ作成（初回のみ）
+            # リポジトリがなければ clone、あれば pull
+            if [ ! -d fastapi-ec2-demo ]; then
+              git clone https://github.com/kohmori0520/fastapi-ec2-demo.git
+            else
+              cd fastapi-ec2-demo
+              git pull origin main
+              cd ..
+            fi
+
+            cd fastapi-ec2-demo
+
+            # .env ファイルがなければ作成
             if [ ! -f .env ]; then
               echo "POSTGRES_USER=postgres" >> .env
               echo "POSTGRES_PASSWORD=secret" >> .env
