@@ -14,7 +14,7 @@ def read_root():
 @app.get("/db-check")
 def db_check():
     try:
-        conn = psycopg2.connect(os.getenv('DAtABASE_URL'))
+        conn = psycopg2.connect(os.getenv('DATABASE_URL'))
         return {"db_status":"connected"}
     except Exception as e:
         return {"db_status":"error","detail":str(e)}
